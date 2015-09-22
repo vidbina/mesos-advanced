@@ -7,11 +7,6 @@ Vagrant.configure(2) do |config|
   config.vm.provision "file", source: "etc-hosts", destination: "~/hosts"
   config.vm.provision "shell", inline: "cat hosts > /etc/hosts"
 
-  config.vm.define "node1" do |node1|
-    config.vm.network "private_network", ip: "192.168.33.10"
-    config.vm.hostname = "node1"
-  end
-
   masters = [
     { name: "node1", ip: "192.168.33.10" }
   ]
@@ -21,6 +16,13 @@ Vagrant.configure(2) do |config|
     { name: "node3", ip: "192.168.33.12" },
   #  { name: "node4", ip: "192.168.33.13" }
   ]
+
+  masters.each do |node|
+    config.vm.define node[:name] do |vm|
+      config.vm.network "private_network", ip: node[:ip]
+      config.vm.hostname = node[:name]
+    end
+  end
 
   slaves.each do |node|
     config.vm.define node[:name] do |vm|
