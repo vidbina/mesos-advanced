@@ -1,7 +1,7 @@
-mkdir ~/go
-export GOPATH=$HOME/go
+export GOPATH=/usr/local/src/go
+mkdir -p $GOPATH
 export PATH=$PATH:$GOPATH/bin
 go get github.com/tools/godep
 go get github.com/mesosphere/mesos-dns
-cd $GOPATH/src/github.com/mesosphere/mesos-dns
-make restoredeps build
+ln -s $GOPATH/bin/mesos-dns /usr/local/bin/.
+chmod a+x /usr/local/bin/mesos-dns
