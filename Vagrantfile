@@ -4,8 +4,10 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "bento/centos-7.1"
   #config.vm.network "private_network", auto_config: false
-  config.vm.provision "file", source: "etc-hosts", destination: "~/hosts"
-  config.vm.provision "shell", inline: "cat hosts > /etc/hosts"
+  config.vm.provision "file", source: "etc-hosts", destination: "~/hosts", run: "always"
+  config.vm.provision "shell", inline: "cat hosts > /etc/hosts", run: "always"
+
+  config.vm.provision "file", source: "etc-resolv.conf", destination: "~/resolv.conf", run: "always"
 
   masters = [
     { name: "node1", ip: "192.168.33.10", zk_id: 1, short: "n1" },
@@ -33,21 +35,32 @@ Vagrant.configure(2) do |config|
       config.vm.provision "file", source: "chkconfig.bash", destination: "~/chkconfig.bash"
       config.vm.provision "shell", inline: "bash chkconfig.bash"
 
+      # set internal nameservers in /etc/resolv.conf
+      masters.each do |ns|
+        cmd = "echo nameserver #{ns[:ip]} >> /etc/resolv.conf"
+        config.vm.provision "shell", inline: cmd
+      end
+
+      # build mesos-dns configuration
+      node_mesos_dns_conf = ".#{node[:name]}.mesos-dns-config.json"
       mesos_dns_config = File.read("mesos-dns-config.json").
         gsub("{{MASTER}}", "#{node[:ip]}:2181/mesos").
         gsub("{{MASTERS}}", masters.map { |m| "\"#{m[:ip]}:5050\"" }.join(", ")).
         gsub("{{SOAM}}", node[:short]).
         gsub("{{SOAR}}", node[:short])
-      open ".#{node[:name]}.mesos-dns-config.json", "w" do |file|
+      open node_mesos_dns_conf, "w" do |file|
         file.puts mesos_dns_config
-      config.vm.provision "shell", 
-        run: "always",
-        inline: "touch /tmp/`date +\"%Y%m%d%H%M%S\"`.stamp"
-      config.vm.provision "file",
-        run: "always",
-        source: ".#{node[:name]}.mesos-dns-config.json", 
-        destination: "~/mesos-dns.config.json"
       end
+      # write mesos-dns configuration to server
+      config.vm.provision "file",
+        source: node_mesos_dns_conf, destination: "~/mesos-dns.config.json"
+
+      # copy mesos-dns job for marathon to server
+      config.vm.provision "file", run: "always",
+        source: "mesos-dns.marathon.json", destination: "~/mesos-dns.marathon.json"
+      config.vm.provision "shell",
+        inline: "curl -XPOST -d@mesos-dns.marathon.json --header \"Content-Type:application/json\" #{node[:ip]}:8080/v2/apps?force=true"
+
     end
   end
 

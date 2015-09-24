@@ -1,0 +1,10 @@
+{
+  "id": "dns",
+  "constraints": [
+    [ "hostname", "UNIQUE" ]
+  ],
+  "instances": 2,
+  "cpus": 0.1,
+  "mem": 128,
+  "cmd": "mesos-dns -v=1 -config=/home/vagrant/mesos-dns.config.json"
+}
