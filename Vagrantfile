@@ -63,9 +63,16 @@ Vagrant.configure(2) do |config|
       # copy mesos-dns job for marathon to server
       config.vm.provision "file", run: "always",
         source: "mesos-dns.marathon.json", destination: "~/mesos-dns.marathon.json"
+
+      config.vm.provision "shell", inline: "service docker restart"
+      config.vm.provision "file", source: "build-outyet.bash", destination: "~/build-outyet.bash"
+      config.vm.provision "shell", inline: "bash build-outyet.bash"
+
+      # NOTE: start marathon after docker is installed
       config.vm.provision "shell",
         inline: "curl -XPOST -d@mesos-dns.marathon.json --header \"Content-Type:application/json\" #{node[:ip]}:8080/v2/apps?force=true"
-
+      config.vm.provision "shell",
+        inline: "curl -XPOST #{node[:ip]}:8080/v2/apps -d@/vagrant/outyet.docker.marathon.json -H\"Content-Type:application/json\""
     end
   end
 

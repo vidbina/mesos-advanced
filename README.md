@@ -33,6 +33,9 @@ The following steps are taken to setup a machine to serve as master:
    - execute `chkconfig.bash`
    - write `/etc/resolv.conf` at this stage, all installations have used the host network's DNS server for resolution so we know our Mesos DNS configuration could not have messed this up.
    - populate Mesos DNS configuration to `mesos-dns.config.json`
+   - restart Docker service
+   - copy outyet container configuration to VM
+   - build outyet container
    - start Marathon job for Mesos DNS
  -  if slave specify slave-specifics
    - copy `install-slave.bash` to VM
@@ -49,4 +52,10 @@ that `/etc/hosts` contains a record for the respective host.
 
 The `/etc/hosts` file currently contains records for all hosts, spawnable by
 this project's Vagrantfile.
+
+---
+
+Failed to connect to slave on `MECHNAME:5051`
+
+Ensure `/etc/hosts` on the host contains a record for `MECHNAME`.
 
