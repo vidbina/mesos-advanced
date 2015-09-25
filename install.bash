@@ -9,5 +9,6 @@ echo === install zookeeper 1>>log 2>>err
 yum -y install zookeeper zookeeper-server 1>>log 2>>err
 echo === install golang 1>>log 2>>err
 yum -y install golang git bind-utils device-mapper-event-libs docker #>>log 2>>err
+echo 'docker,mesos' | sudo tee /etc/mesos-slave/containerizers
 echo \"ended\" >> log
 

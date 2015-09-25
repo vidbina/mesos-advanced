@@ -24,7 +24,7 @@ The following steps are taken to setup a machine to serve as master:
    - set vagrant network to `private_network`
    - set vm hostname
    - copy `install.bash` to VM
-   - execute `install.bash` to install `mesos`, `zookeeper` and `go`
+   - execute `install.bash` to install `mesos`, `zookeeper`, `docker` and `go`
    - copy `build-mesos-dns.bash` to VM
    - execute `build-mesos-dns.bash` to build and install `mesos-dns`
    - start zookeeper-server with appropriate id
@@ -39,11 +39,12 @@ The following steps are taken to setup a machine to serve as master:
    - start Marathon job for Mesos DNS
  -  if slave specify slave-specifics
    - copy `install-slave.bash` to VM
-   - execute `install-slave.bash` to install `mesos`
+   - execute `install-slave.bash` to install `mesos` and `docker`
    - setup zookeeper endpoint in `/etc/mesos/zk`
-   - start mesos-slave service
+   - restart mesos-slave service
    - copy `chkconfig.bash` to VM
    - execute `chkconfig.bash`
+   - load Docker container
 
 $$ Troubleshoot
 

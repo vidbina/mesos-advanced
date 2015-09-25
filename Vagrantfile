@@ -90,12 +90,17 @@ Vagrant.configure(2) do |config|
       config.vm.provision "file", source: "install-slave.bash", destination: "~/install.bash"
       config.vm.provision "shell", inline: "bash install.bash"
 
+      config.vm.provision "shell", inline: "service mesos-slave start"
+      config.vm.provision "shell", inline: "service docker start"
+
       # TODO: be less explicit about this
       config.vm.provision "shell", inline: "echo zk://192.168.33.13:2181/mesos > /etc/mesos/zk"
-      config.vm.provision "shell", inline: "service mesos-slave start 1>>log 2>>err"
+      config.vm.provision "shell", inline: "service mesos-slave restart 1>>log 2>>err"
       
       config.vm.provision "file", source: "chkconfig-slave.bash", destination: "~/chkconfig.bash"
       config.vm.provision "shell", inline: "bash chkconfig.bash"
+
+      config.vm.provision "shell", inline: "docker load --input=/vagrant/outyet.tar.gz"
     end
   end
 

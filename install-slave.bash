@@ -9,4 +9,5 @@ yum -y install mesos #1>log 2>err
 #yum -y install zookeeper zookeeper-server #1>>log 2>>err
 #echo === install golang 1>>log 2>>err
 yum -y install bind-utils device-mapper-event-libs docker #1>>log 2>>err
+echo 'docker,mesos' | sudo tee /etc/mesos-slave/containerizers
 echo \"ended\" >> log
