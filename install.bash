@@ -8,6 +8,6 @@ rpm -Uvh http://archive.cloudera.com/cdh4/one-click-install/redhat/6/x86_64/clou
 echo === install zookeeper 1>>log 2>>err
 yum -y install zookeeper zookeeper-server 1>>log 2>>err
 echo === install golang 1>>log 2>>err
-yum -y install golang git bind-utils 1>>log 2>>err
+yum -y install golang git bind-utils device-mapper-event-libs docker #>>log 2>>err
 echo \"ended\" >> log
 
