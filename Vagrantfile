@@ -64,6 +64,34 @@ Vagrant.configure(2) do |config|
     end
   end
 
+  #config.vm.provision "shell", inline: "cat resolv.conf > /etc/resolv.conf", run: "always"
+
+  slaves.each do |node|
+    config.vm.define node[:name] do |vm|
+      config.vm.network "private_network", ip: node[:ip]
+      config.vm.hostname = node[:name]
+
+      # FIX: be consitent either build etc-resolv.conf (see master) or copy
+      config.vm.provision "file", source: "etc-resolv.conf", destination: "~/resolv.conf"
+      config.vm.provision "shell", inline: "cat resolv.conf > /etc/resolv.conf", run: "always"
+
+      config.vm.provision "file", source: "install-slave.bash", destination: "~/install.bash"
+      config.vm.provision "shell", inline: "bash install.bash"
+
+      # TODO: be less explicit about this
+      config.vm.provision "shell", inline: "echo zk://192.168.33.13:2181/mesos > /etc/mesos/zk"
+      config.vm.provision "shell", inline: "service mesos-slave start 1>>log 2>>err"
+      
+      config.vm.provision "file", source: "chkconfig-slave.bash", destination: "~/chkconfig.bash"
+      config.vm.provision "shell", inline: "bash chkconfig.bash"
+    end
+  end
+
+  config.vm.define "m1" do |m1|
+    config.vm.network "private_network", ip: "192.168.33.20"
+    config.vm.hostname = "m1"
+  end
+
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]

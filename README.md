@@ -31,6 +31,12 @@ The following steps are taken to setup a machine to serve as master:
    - copy `chkconfig.bash` to VM
    - execute `chkconfig.bash`
  -  if slave specify slave-specifics
+   - copy `install-slave.bash` to VM
+   - execute `install-slave.bash` to install `mesos`
+   - setup zookeeper endpoint in `/etc/mesos/zk`
+   - start mesos-slave service
+   - copy `chkconfig.bash` to VM
+   - execute `chkconfig.bash`
 
 $$ Troubleshoot
 
