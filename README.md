@@ -28,8 +28,12 @@ The following steps are taken to setup a machine to serve as master:
    - copy `build-mesos-dns.bash` to VM
    - execute `build-mesos-dns.bash` to build and install `mesos-dns`
    - start zookeeper-server with appropriate id
+   - start `mesos-master`, `mesos-slave`, `marathon` and `chronos` services
    - copy `chkconfig.bash` to VM
    - execute `chkconfig.bash`
+   - write `/etc/resolv.conf` at this stage, all installations have used the host network's DNS server for resolution so we know our Mesos DNS configuration could not have messed this up.
+   - populate Mesos DNS configuration to `mesos-dns.config.json`
+   - start Marathon job for Mesos DNS
  -  if slave specify slave-specifics
    - copy `install-slave.bash` to VM
    - execute `install-slave.bash` to install `mesos`

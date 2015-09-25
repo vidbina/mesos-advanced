@@ -30,16 +30,21 @@ Vagrant.configure(2) do |config|
 
       config.vm.provision "file", source: "build-mesos-dns.bash", destination: "~/build-mesos-dns.bash"
       config.vm.provision "shell", inline: "bash build-mesos-dns.bash"
+
+      config.vm.provision "shell", inline: "echo === zookeeper init #{node[:zk_id]} 1>>log 2>>err; pwd 1>>log 2>>err;"
       config.vm.provision "shell", inline: "sudo -u zookeeper zookeeper-server-initialize --myid=#{node[:zk_id]} 1>>log 2>>err"
+      config.vm.provision "shell", inline: "service zookeeper-server start"
+      config.vm.provision "shell", inline: "service mesos-master start"
+      config.vm.provision "shell", inline: "service mesos-slave start"
+      config.vm.provision "shell", inline: "service marathon start"
+      config.vm.provision "shell", inline: "service chronos start"
 
       config.vm.provision "file", source: "chkconfig.bash", destination: "~/chkconfig.bash"
       config.vm.provision "shell", inline: "bash chkconfig.bash"
 
       # set internal nameservers in /etc/resolv.conf
-      masters.each do |ns|
-        cmd = "echo nameserver #{ns[:ip]} >> /etc/resolv.conf"
-        config.vm.provision "shell", inline: cmd
-      end
+      config.vm.provision "file", source: "etc-resolv.conf", destination: "~/resolv.conf"
+      config.vm.provision "shell", run: "always", inline: "cat resolv.conf > /etc/resolv.conf"
 
       # build mesos-dns configuration
       node_mesos_dns_conf = ".#{node[:name]}.mesos-dns-config.json"
