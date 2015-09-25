@@ -1,2 +1,6 @@
 *.swp
 ~*
+.*.json
+.vagrant
+*.box
+*.tar.gz
